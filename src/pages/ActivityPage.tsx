@@ -1,11 +1,5 @@
-import ActivityHero from "../components/ActivityHero"
-
 const ActivityPage = () => {
-  return (
-    <>
-      <ActivityHero />
-    </>
-  )
-}
+  return <div></div>;
+};
 
-export default ActivityPage
+export default ActivityPage;

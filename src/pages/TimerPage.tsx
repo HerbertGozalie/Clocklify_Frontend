@@ -1,10 +1,5 @@
-import TimerHero from "../components/TimerHero"
 const TimerPage = () => {
-  return (
-    <>
-      <TimerHero />
-    </>
-  )
-}
+  return <div></div>;
+};
 
-export default TimerPage
+export default TimerPage;

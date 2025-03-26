@@ -1,16 +1,14 @@
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-type EyeButtonProps = {
-  onClick: React.MouseEventHandler<HTMLButtonElement>,
-  visible: boolean
+interface EyeButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  visible: boolean;
 }
-
-const EyeButton = ({onClick, visible}: EyeButtonProps) => {
+const EyeButton = ({ visible, ...props }: EyeButtonProps) => {
   return (
     <>
       <button
         type="button"
-        onClick={onClick}
+        onClick={props.onClick}
         className="
           absolute
           right-0
@@ -19,12 +17,12 @@ const EyeButton = ({onClick, visible}: EyeButtonProps) => {
         text-f-light-grey
           focus:outline-none
         "
-        aria-label={visible ? 'Hide password' : 'Show password'}
+        aria-label={visible ? "Hide password" : "Show password"}
       >
         {visible ? <FaEye size={25} /> : <FaEyeSlash size={25} />}
       </button>
     </>
-  )
-}
+  );
+};
 
-export default EyeButton
+export default EyeButton;

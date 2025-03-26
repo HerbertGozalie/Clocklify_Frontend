@@ -26,8 +26,8 @@ export const ForgotPassSchema = Yup.object().shape({
 });
 
 export const ResetPassSchema = Yup.object().shape({
-  password: Yup.string().password().required("Password is required"),
+  newPassword: Yup.string().password().required("Password is required"),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password")], "Passwords must match")
+    .oneOf([Yup.ref("newPassword")], "Passwords must match")
     .required("Confirm password is required"),
 });
