@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { API_URL_DEV } from "../config";
-// import { API_URL } from "../config"; => for debugging purposes
+// import { API_URL_DEV } from "../config";
+import { API_URL } from "../config"; //=> for debugging purposes
 
 const VerifyUserEmail = () => {
   const navigate = useNavigate();
@@ -15,8 +15,8 @@ const VerifyUserEmail = () => {
         const params = new URLSearchParams(location.search);
         const emailToken = params.get("emailToken");
         const response = await axios.patch(
-          // `${API_URL}/api/v1/user/verifyemail`, => for debugging purposes
-          `${API_URL_DEV}/api/v1/user/verifyemail`,
+          `${API_URL}/api/v1/user/verifyemail`, //=> for debugging purposes
+          // `${API_URL_DEV}/api/v1/user/verifyemail`,
           {
             emailToken: emailToken,
           }
