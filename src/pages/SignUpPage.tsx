@@ -1,21 +1,36 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HiOutlineMail } from "react-icons/hi";
 import { GoKey } from "react-icons/go";
-import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import { AxiosError } from "axios";
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
 import EyeButton from "../components/EyeButton";
+import ErrorText from "../components/ErrorText";
+import Modal from "../components/Modal";
 import { SignupSchema } from "../schema/UserSchema";
-import { signUp } from "../services/AuthService";
+import { registerUser } from "../services/AuthService";
 
 interface SignUpProps {
   email: string;
   password: string;
   confirmPassword: string;
 }
-const SignUpPage: React.FC = () => {
+
+interface MyErrorResponse {
+  status: string;
+  errors: {
+    message: string;
+  };
+}
+
+const SignUpPage = () => {
   const navigate = useNavigate();
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const toggleVisibility = () => setIsVisible((prev) => !prev);
+  const [hasBackendError, setHasBackendError] = useState<boolean>(false);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const formik = useFormik<SignUpProps>({
     initialValues: {
@@ -24,22 +39,53 @@ const SignUpPage: React.FC = () => {
       confirmPassword: "",
     },
     validationSchema: SignupSchema,
-    onSubmit: async (values, { setStatus }) => {
+    onSubmit: async (values, { setStatus, setSubmitting }) => {
       try {
-        await signUp(values.email, values.password, values.confirmPassword);
-        setStatus("Register successful!");
-        navigate("/signin");
-        console.log(setStatus);
-      } catch (error) {
-        if (error instanceof Error) {
-          setStatus(error.message || "Register failed");
+        await registerUser(
+          values.email,
+          values.password,
+          values.confirmPassword
+        );
+        setModalOpen(true);
+        setStatus({ success: "Register successful!" });
+      } catch (err) {
+        // if (error instanceof Error) {
+        //   setStatus(error.message || "Login failed");
+        // setError(true);
+        // }
+        const axiosError = err as AxiosError<MyErrorResponse>;
+        console.error("Login Error:", axiosError);
+        if (
+          axiosError.response &&
+          axiosError.response.data &&
+          axiosError.response.data.errors
+        ) {
+          setStatus({
+            error: axiosError.response.data.errors.message || "Register failed",
+          });
+        } else {
+          setStatus({ error: axiosError.message || "Register failed" });
         }
+        setHasBackendError(true);
+      } finally {
+        setSubmitting(false);
       }
     },
   });
 
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-  const toggleVisibility = () => setIsVisible((prev) => !prev);
+  useEffect(() => {
+    if (Object.keys(formik.errors).length > 0 && formik.status?.error) {
+      formik.setStatus({});
+      setHasBackendError(false);
+    }
+
+    if (!modalOpen && formik.status?.success) {
+      const timer = setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [modalOpen, formik, navigate]);
 
   return (
     <>
@@ -58,7 +104,7 @@ const SignUpPage: React.FC = () => {
               touched={formik.touched.email}
               onBlur={formik.handleBlur}
               onChange={formik.handleChange}
-            />
+            ></TextInput>
           </div>
 
           <div className="flex items-center mb-[3rem]">
@@ -96,6 +142,12 @@ const SignUpPage: React.FC = () => {
               className="border-f-light-grey"
             >
               <EyeButton onClick={toggleVisibility} visible={isVisible} />
+              {/* Display error message if any exists in Formik status */}
+              {formik.status && formik.status.error && (
+                <ErrorText error={hasBackendError}>
+                  {formik.status.error}
+                </ErrorText>
+              )}
             </TextInput>
           </div>
 
@@ -103,6 +155,16 @@ const SignUpPage: React.FC = () => {
             SignUp
           </Button>
         </form>
+
+        {/* Show the registration success modal */}
+        {modalOpen && (
+          <Modal
+            open={modalOpen}
+            setOpen={setModalOpen}
+            title="Success"
+            message="Your account has been successed created. Please check your email for verification."
+          />
+        )}
       </div>
     </>
   );

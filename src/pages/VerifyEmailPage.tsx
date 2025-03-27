@@ -29,7 +29,7 @@ const VerifyUserEmail = () => {
         console.log(response);
 
         setTimeout(() => {
-          navigate("/signin");
+          navigate("/login");
         }, 2000);
       } catch (error) {
         console.log(error);

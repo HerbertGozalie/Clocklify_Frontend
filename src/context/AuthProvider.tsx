@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
 import Cookies from "js-cookie";
 
 interface User {
@@ -10,13 +10,12 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   signIn: (user: User, token: string) => void;
+  signOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
@@ -33,8 +32,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     Cookies.set("authToken", token, { expires: 2 });
   };
 
+  const signOut = () => {
+    setUser(null);
+    setToken(null);
+    Cookies.remove("authToken");
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, signIn }}>
+    <AuthContext.Provider value={{ user, token, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

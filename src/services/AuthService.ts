@@ -8,26 +8,33 @@ interface User {
   email: string;
 }
 
-interface SignInResponse extends User {
-  token: string;
+interface SignInResponse {
+  status: string;
+  message: string;
   user: User;
+  token: string;
 }
 
 interface SignUpResponse {
-  user?: User;
+  status: string;
+  message: string;
+  user: User;
+  token: string;
+  emailToken: string;
+}
+
+export interface ForgotPassResponse {
+  status: string;
   message: string;
 }
 
-interface ForgotPassResponse extends User {
-  email: User["email"];
-}
-
-interface ResetPasswordResponse extends User {
-  user?: User;
+export interface ResetPasswordResponse {
+  status: string;
   message: string;
+  loginToken: string;
 }
 
-export async function signIn(
+export async function loginUser(
   email: string,
   password: string
 ): Promise<SignInResponse> {
@@ -45,7 +52,7 @@ export async function signIn(
   return response.data;
 }
 
-export async function signUp(
+export async function registerUser(
   email: string,
   password: string,
   confirmPassword: string

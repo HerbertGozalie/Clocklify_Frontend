@@ -18,31 +18,17 @@ const App = () => {
         <Routes>
           <Route index element={<LandingPage />} />
           <Route element={<AuthLayout />}>
-            <Route path="/signin" element={<SignInPage />} />,
-            <Route path="/signup" element={<SignUpPage />} />,
+            <Route path="/login" element={<SignInPage />} />,
+            <Route path="/register" element={<SignUpPage />} />,
             <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/forgot-password" element={<ForgotPassPage />} />
             <Route path="/reset-password" element={<ResetPassPage />} />
           </Route>
-          <Route element={<MainLayout />}>
-            <Route
-              path="/timer"
-              element={
-                <ProtectedRoute>
-                  <TimerPage />
-                </ProtectedRoute>
-              }
-            />
-            ,
-            <Route
-              path="/activity"
-              element={
-                <ProtectedRoute>
-                  <ActivityPage />
-                </ProtectedRoute>
-              }
-            />
-            ,
+          <Route element={<ProtectedRoute />}>
+            <Route element={<MainLayout />}>
+              <Route path="/timer" element={<TimerPage />} />,
+              <Route path="/activity" element={<ActivityPage />} />,
+            </Route>
           </Route>
         </Routes>
       </BrowserRouter>
