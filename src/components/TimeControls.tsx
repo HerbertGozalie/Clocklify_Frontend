@@ -77,7 +77,7 @@ const TimeControls = ({
               className="w-[8rem]"
               disabled={createActivityMutation.isPending}
             >
-              {createActivityMutation.isPending ? "SAVING..." : "SAVE"}
+              {createActivityMutation.isPending ? "UPDATING..." : "UPDATE"}
             </Button>
             <Button
               onClick={handleDelete}

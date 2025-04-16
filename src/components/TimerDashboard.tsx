@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ToastContainer, toast } from "react-toastify";
 import { createActivity } from "../services/ActivitiesService";
 import { useNavigate } from "react-router-dom";
 import TimerDisplay from "./TimerDisplay";
@@ -41,8 +42,12 @@ const TimerDashboard = () => {
     mutationFn: (newActivity: ActivityCreatePayload) =>
       createActivity(newActivity),
     onSuccess: () => {
-      navigate("/activity");
+      toast.success("Activity created successfully!");
       queryClient.invalidateQueries({ queryKey: ["activities"] });
+      setTimeout(() => {
+        handleReset();
+        navigate("/activity");
+      }, 2000);
     },
     onError: (err) => {
       const errorMessage = getErrorMessage(err);
@@ -80,6 +85,7 @@ const TimerDashboard = () => {
           createActivityMutation={createActivityMutation}
         >
           <ErrorText error={hasError}>{error}</ErrorText>
+          <ToastContainer />
         </DescriptionInput>
 
         <TimeControls

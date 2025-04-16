@@ -12,6 +12,7 @@ import ProtectedRoutes from "./routes/ProtectedRoutes";
 import LandingPage from "./pages/LandingPage";
 import AuthRoutes from "./routes/AuthRoutes";
 import EditActivityPage from "./pages/ActivityDetailsPage";
+import { NotFound } from "./components/NotFound";
 
 const App = () => {
   return (
@@ -34,6 +35,7 @@ const App = () => {
             <Route path="/activity/:uuid" element={<EditActivityPage />} />
           </Route>
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

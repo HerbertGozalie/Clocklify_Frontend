@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ToastContainer, toast } from "react-toastify";
 import {
+  deleteActivity,
   // createActivity,
   getSingleActivity,
   updateActivity,
@@ -20,9 +22,9 @@ import { ActivityUpdatePayload } from "../types/activity";
 const ActivityDetails = () => {
   const { uuid } = useParams();
   const navigate = useNavigate();
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-  const { formatDate, formatDateTime, handleReset } = useTimer();
+  const { formatDate, formatDateTime } = useTimer();
   const [descriptionDetails, setDescriptionDetails] = useState<string>("");
   const [startTimeDetails, setStartTimeDetails] = useState<string>("");
   const [startDateDetails, setStartDateDetails] = useState<string>("");
@@ -31,9 +33,12 @@ const ActivityDetails = () => {
   const [locationLatDetails, setLocationLatDetails] = useState<number>(0);
   const [locationLngDetails, setLocationLngDetails] = useState<number>(0);
   const [durationDetails, setDurationDetails] = useState<number>(0);
+  const [errorDetails, setErrorDetails] = useState<string>("");
+  const [hasErrorDetails, setHasErrorDetails] = useState(false);
+  // const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const todayDate = new Date();
 
-  const { isLoading, data, error } = useQuery({
+  const { isLoading, data, isError, error } = useQuery({
     queryKey: ["activityDetails", uuid],
     queryFn: getSingleActivity,
   });
@@ -52,44 +57,47 @@ const ActivityDetails = () => {
   }, [data, formatDate, formatDateTime]);
 
   // Activity creation mutation
-  const createActivityMutation = useMutation({
+  const updateActivityMutation = useMutation({
     mutationFn: (newActivity: ActivityUpdatePayload) =>
       updateActivity(newActivity),
     onSuccess: () => {
-      navigate("/activity");
+      // navigate("/activity");
+      toast.success("Activity updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["activities"] });
     },
     onError: (err) => {
       const errorMessage = getErrorMessage(err);
-      setError(errorMessage);
-      setHasError(true);
+      setErrorDetails(errorMessage);
+      setHasErrorDetails(true);
       console.error("Failed to save activity:", err);
     },
   });
 
   const handleSave = (onSave?: (data: ActivityUpdatePayload) => void) => {
-    if (!form.description.trim()) {
-      setError("Please enter an activity description");
-      setHasError(true);
+    if (!descriptionDetails.trim()) {
+      setErrorDetails("Please enter an activity description");
+      setHasErrorDetails(true);
       return;
     }
 
-    if (!form.location_lat || !form.location_lng) {
-      setError("Please enable location services to start tracking");
-      setHasError(true);
+    if (!locationLatDetails || !locationLngDetails) {
+      setErrorDetails("Please enable location services to start tracking");
+      setHasErrorDetails(true);
       return;
     }
-    setError("");
-    setHasError(false);
+    setErrorDetails("");
+    setHasErrorDetails(false);
 
-    const startDateTime = new Date(`${startDate} ${startTime}`);
-    const endDateTime = new Date(`${endDate} ${endTime}`);
+    const startDateTime = new Date(`${startDateDetails} ${startTimeDetails}`);
+    const endDateTime = new Date(`${endDateDetails} ${endTimeDetails}`);
 
     const activityData = {
-      description: activity,
+      uuid: uuid!,
+      description: descriptionDetails,
       start_time: startDateTime.toISOString(),
       end_time: endDateTime.toISOString(),
-      location_lat: locationCoords.lat,
-      location_lng: locationCoords.lng,
+      location_lat: locationLatDetails,
+      location_lng: locationLngDetails,
     };
 
     if (onSave) {
@@ -99,17 +107,39 @@ const ActivityDetails = () => {
 
   const handleSaveWithMutation = () => {
     handleSave((activityData) => {
-      createActivityMutation.mutate(activityData);
+      updateActivityMutation.mutate(activityData);
     });
+  };
+
+  const { mutate: deleteActDetails } = useMutation({
+    mutationFn: deleteActivity,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["activities"] });
+    },
+  });
+
+  const handleDeleteDetails = ({ uuid }: { uuid: string }) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this activity?"
+    );
+    if (confirmDelete) {
+      // setIsDeleting(true);
+      deleteActDetails(uuid);
+      setTimeout(() => {
+        // setIsDeleting(false);
+        navigate("/activity");
+      }, 100);
+    }
+    return;
   };
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  // if (isError) {
-  //   return <div>Error: {error.message}</div>;
-  // }
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <div className="flex justify-center">
@@ -134,16 +164,17 @@ const ActivityDetails = () => {
         <DescriptionInput
           description={descriptionDetails}
           setDescription={setDescriptionDetails}
-          createActivityMutation={createActivityMutation}
+          createActivityMutation={updateActivityMutation}
         >
-          {/* <ErrorText error={hasError}>{error}</ErrorText> */}
+          <ErrorText error={hasErrorDetails}>{errorDetails}</ErrorText>
+          <ToastContainer />
         </DescriptionInput>
 
         <TimeControls
           mode="edit"
-          handleReset={handleReset}
+          handleDelete={() => handleDeleteDetails({ uuid: uuid! })}
           handleSave={handleSaveWithMutation}
-          createActivityMutation={createActivityMutation}
+          createActivityMutation={updateActivityMutation}
         />
       </div>
     </div>
