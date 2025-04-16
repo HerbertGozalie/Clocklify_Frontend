@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
-import { AxiosError } from "axios";
 import { HiOutlineMail } from "react-icons/hi";
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
@@ -9,16 +8,10 @@ import Modal from "../components/Modal";
 import { ForgotPassSchema } from "../schema/UserSchema";
 import { useNavigate } from "react-router-dom";
 import { forgotPassword } from "../services/AuthService";
+import { getErrorMessage } from "../services/HandleApiError";
 
 interface ForgotPassProps {
   email: string;
-}
-
-interface MyErrorResponse {
-  status: string;
-  errors: {
-    message: string;
-  };
 }
 
 const ForgotPassPage = () => {
@@ -37,23 +30,7 @@ const ForgotPassPage = () => {
         setModalOpen(true);
         setStatus({ success: "Email sent successful!" });
       } catch (err) {
-        // if (error instanceof Error) {
-        //   setStatus(error.message || "Login failed");
-        // setError(true);
-        // }
-        const axiosError = err as AxiosError<MyErrorResponse>;
-        console.error("Login Error:", axiosError);
-        if (
-          axiosError.response &&
-          axiosError.response.data &&
-          axiosError.response.data.errors
-        ) {
-          setStatus({
-            error: axiosError.response.data.errors.message || "Login failed",
-          });
-        } else {
-          setStatus({ error: axiosError.message || "Login failed" });
-        }
+        setStatus({ error: getErrorMessage(err) });
         setHasBackendError(true);
       } finally {
         setSubmitting(false);
@@ -101,9 +78,11 @@ const ForgotPassPage = () => {
             </TextInput>
           </div>
 
-          <Button type="submit" className="w-xs">
-            Reset Password
-          </Button>
+          <div className="flex justify-center mt-60">
+            <Button type="submit" className="w-xs">
+              Reset Password
+            </Button>
+          </div>
         </form>
         {/* Show the registration success modal */}
         {modalOpen && (

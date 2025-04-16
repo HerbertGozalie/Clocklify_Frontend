@@ -3,7 +3,6 @@ import { HiOutlineMail } from "react-icons/hi";
 import { GoKey } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
-import { AxiosError } from "axios";
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
 import EyeButton from "../components/EyeButton";
@@ -11,18 +10,12 @@ import ErrorText from "../components/ErrorText";
 import Modal from "../components/Modal";
 import { SignupSchema } from "../schema/UserSchema";
 import { registerUser } from "../services/AuthService";
+import { getErrorMessage } from "../services/HandleApiError";
 
 interface SignUpProps {
   email: string;
   password: string;
   confirmPassword: string;
-}
-
-interface MyErrorResponse {
-  status: string;
-  errors: {
-    message: string;
-  };
 }
 
 const SignUpPage = () => {
@@ -49,23 +42,7 @@ const SignUpPage = () => {
         setModalOpen(true);
         setStatus({ success: "Register successful!" });
       } catch (err) {
-        // if (error instanceof Error) {
-        //   setStatus(error.message || "Login failed");
-        // setError(true);
-        // }
-        const axiosError = err as AxiosError<MyErrorResponse>;
-        console.error("Login Error:", axiosError);
-        if (
-          axiosError.response &&
-          axiosError.response.data &&
-          axiosError.response.data.errors
-        ) {
-          setStatus({
-            error: axiosError.response.data.errors.message || "Register failed",
-          });
-        } else {
-          setStatus({ error: axiosError.message || "Register failed" });
-        }
+        setStatus({ error: getErrorMessage(err) });
         setHasBackendError(true);
       } finally {
         setSubmitting(false);
@@ -113,7 +90,7 @@ const SignUpPage = () => {
               id="password"
               name="password"
               type={isVisible ? "text" : "password"}
-              autoComplete="on"
+              autoComplete="new-password"
               placeholder="Input Your Password"
               value={formik.values.password}
               error={formik.errors.password}
@@ -132,7 +109,7 @@ const SignUpPage = () => {
               id="confirmPassword"
               name="confirmPassword"
               type={isVisible ? "text" : "password"}
-              autoComplete="on"
+              autoComplete="new-password"
               placeholder="Confirm Your Password"
               value={formik.values.confirmPassword}
               error={formik.errors.confirmPassword}
@@ -151,9 +128,11 @@ const SignUpPage = () => {
             </TextInput>
           </div>
 
-          <Button type="submit" className="w-xs">
-            SignUp
-          </Button>
+          <div className="flex justify-center mt-60">
+            <Button type="submit" className="w-xs">
+              SignUp
+            </Button>
+          </div>
         </form>
 
         {/* Show the registration success modal */}

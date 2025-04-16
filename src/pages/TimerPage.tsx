@@ -1,5 +1,11 @@
+import TimerDashboard from "../components/TimerDashboard";
+
 const TimerPage = () => {
-  return <div></div>;
+  return (
+    <>
+      <TimerDashboard />
+    </>
+  );
 };
 
 export default TimerPage;

@@ -1,5 +1,11 @@
+import ActivityDashboard from "../components/ActivityDashboard";
+
 const ActivityPage = () => {
-  return <div></div>;
+  return (
+    <>
+      <ActivityDashboard />
+    </>
+  );
 };
 
 export default ActivityPage;

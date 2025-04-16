@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
-import { AxiosError } from "axios";
 import TextInput from "../components/TextInput";
 import Button from "../components/Button";
 import { ResetPassSchema } from "../schema/UserSchema";
@@ -10,17 +9,11 @@ import ErrorText from "../components/ErrorText";
 import Modal from "../components/Modal";
 import { useLocation, useNavigate } from "react-router-dom";
 import { resetPassword } from "../services/AuthService";
+import { getErrorMessage } from "../services/HandleApiError";
 
 interface ResetPassProps {
   newPassword: string;
   confirmPassword: string;
-}
-
-interface MyErrorResponse {
-  status: string;
-  errors: {
-    message: string;
-  };
 }
 
 const ResetPassPage = () => {
@@ -57,23 +50,7 @@ const ResetPassPage = () => {
         setModalOpen(true);
         setStatus({ success: "Reset password successful!" });
       } catch (err) {
-        // if (error instanceof Error) {
-        //   setStatus(error.message || "Login failed");
-        // setError(true);
-        // }
-        const axiosError = err as AxiosError<MyErrorResponse>;
-        console.error("Login Error:", axiosError);
-        if (
-          axiosError.response &&
-          axiosError.response.data &&
-          axiosError.response.data.errors
-        ) {
-          setStatus({
-            error: axiosError.response.data.errors.message || "Login failed",
-          });
-        } else {
-          setStatus({ error: axiosError.message || "Login failed" });
-        }
+        setStatus({ error: getErrorMessage(err) });
         setHasBackendError(true);
       } finally {
         setSubmitting(false);
@@ -104,7 +81,7 @@ const ResetPassPage = () => {
               id="newPassword"
               name="newPassword"
               type={isVisible ? "text" : "password"}
-              autoComplete="on"
+              autoComplete="new-password"
               placeholder="Input Your Password"
               value={formik.values.newPassword}
               error={formik.errors.newPassword}
@@ -123,7 +100,7 @@ const ResetPassPage = () => {
               id="confirmPassword"
               name="confirmPassword"
               type={isVisible ? "text" : "password"}
-              autoComplete="on"
+              autoComplete="new-password"
               placeholder="Confirm Your Password"
               value={formik.values.confirmPassword}
               error={formik.errors.confirmPassword}
@@ -142,9 +119,11 @@ const ResetPassPage = () => {
             </TextInput>
           </div>
 
-          <Button type="submit" className="w-xs">
-            Reset Your Password
-          </Button>
+          <div className="flex justify-center mt-60">
+            <Button type="submit" className="w-xs">
+              Reset Your Password
+            </Button>
+          </div>
         </form>
         {/* Show the registration success modal */}
         {modalOpen && (
