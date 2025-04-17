@@ -1,10 +1,10 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import { API_URL_DEV } from "../config";
-// import { API_URL } from "../config"; //=> for online api
+// import { API_URL_DEV } from "../config";
+import { API_URL } from "../config"; //=> for online api
 
 const apiClient = axios.create({
-  baseURL: API_URL_DEV,
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
