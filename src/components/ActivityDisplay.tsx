@@ -50,6 +50,12 @@ const ActivityDisplay = ({
     return;
   };
 
+  const trimDescription = (description: string) => {
+    return description.length > 15
+      ? description.substring(0, 15) + "..."
+      : description;
+  };
+
   return (
     <>
       <div className="overflow-x-hidden">
@@ -74,7 +80,9 @@ const ActivityDisplay = ({
                 </div>
               </div>
               <div className="flex flex-col items-end">
-                <p className="text-sm font-semibold mb-2">{description}</p>
+                <p className="text-sm font-semibold mb-2">
+                  {trimDescription(description)}
+                </p>
                 <div className="flex flex-row">
                   <span className="text-f-light-grey mr-2 text-xs">
                     <FaLocationDot />
