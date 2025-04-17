@@ -3,12 +3,14 @@ import { Link } from "react-router-dom";
 const Navbar = () => {
   return (
     <>
-      <nav className="text-white lg:px-123 md:px-76 py-35 flex items-center justify-between">
+      <nav className="text-white lg:px-123 md:px-76 py-35 px-20 flex items-center justify-between">
         <div className="flex items-center">
-          <img src={logo} alt="clocklify logo" />
+          <Link to="/timer" className="cursor-pointer">
+            <img src={logo} alt="clocklify logo" />
+          </Link>
         </div>
 
-        <div className="flex space-x-90 px-20">
+        <div className="flex max-md:space-x-20 space-x-90 px-20">
           <Link to="/timer" className="hover:opacity-90">
             TIMER
           </Link>

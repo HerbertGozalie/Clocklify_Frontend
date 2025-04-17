@@ -9,6 +9,7 @@ import useDebounce from "../hooks/useDebounce";
 import SearchBar from "./SearchBar";
 import SortFilter from "./SortFilter";
 import _ from "lodash";
+import Loader from "./Loader";
 
 const ActivityDashboard = () => {
   const [search, setSearch] = useState("");
@@ -33,12 +34,6 @@ const ActivityDashboard = () => {
     retry: 1,
   });
 
-  if (isLoading) {
-    return (
-      <div className="text-center text-white opacity-60 py-8">Loading ...</div>
-    );
-  }
-
   const groupByDate = activities?.data?.activities
     ? _.groupBy(activities.data.activities, (activities) =>
         formatDate(activities.start_time)
@@ -60,34 +55,41 @@ const ActivityDashboard = () => {
               </div>
             </div>
 
-            <div className="grid gap-6 mt-[2.7em]">
-              {activities?.data?.activities ||
-              activities?.data.activities.length === 0 ? (
-                Object.entries(groupByDate).map(([date, activities]) => (
-                  <div key={date}>
-                    <DateDisplay startDate={date} />
-                    {activities.map((activity) => (
-                      <div key={activity.uuid} className="text-white">
-                        <ActivityDisplay
-                          description={activity.description}
-                          startTime={formatDateTime(activity.start_time)}
-                          endTime={formatDateTime(activity.end_time)}
-                          duration={formatDurationTimer(activity.duration)}
-                          location_lat={activity.location_lat}
-                          location_lng={activity.location_lng}
-                          distance={activity.distance}
-                          uuid={activity.uuid}
-                        />
-                      </div>
-                    ))}
+            {isLoading ? (
+              // <div className="text-center text-white opacity-60 mt-[2.7em]">
+              //   Loading ...
+              // </div>
+              <Loader isLoading={isLoading} />
+            ) : (
+              <div className="grid gap-6 mt-[2.7em]">
+                {activities?.data?.activities ||
+                activities?.data.activities.length === 0 ? (
+                  Object.entries(groupByDate).map(([date, activities]) => (
+                    <div key={date}>
+                      <DateDisplay startDate={date} />
+                      {activities.map((activity) => (
+                        <div key={activity.uuid} className="text-white">
+                          <ActivityDisplay
+                            description={activity.description}
+                            startTime={formatDateTime(activity.start_time)}
+                            endTime={formatDateTime(activity.end_time)}
+                            duration={formatDurationTimer(activity.duration)}
+                            location_lat={activity.location_lat}
+                            location_lng={activity.location_lng}
+                            distance={activity.distance}
+                            uuid={activity.uuid}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-white text-center">
+                    No activities found.
                   </div>
-                ))
-              ) : (
-                <div className="text-white text-center">
-                  No activities found.
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

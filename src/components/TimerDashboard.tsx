@@ -1,16 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { createActivity } from "../services/ActivitiesService";
-import { useNavigate } from "react-router-dom";
+import { getErrorMessage } from "../services/HandleApiError";
+import useTimer from "../hooks/useTimer";
+import { ActivityCreatePayload } from "../types/activity";
 import TimerDisplay from "./TimerDisplay";
 import TimeInfo from "./TimeInfo";
 import LocationInfo from "./LocationInfo";
 import DescriptionInput from "./DescriptionInput";
 import TimeControls from "./TimeControls";
 import ErrorText from "./ErrorText";
-import { getErrorMessage } from "../services/HandleApiError";
-import useTimer from "../hooks/useTimer";
-import { ActivityCreatePayload } from "../types/activity";
 
 const TimerDashboard = () => {
   const queryClient = useQueryClient();
@@ -67,7 +67,6 @@ const TimerDashboard = () => {
     <div className="flex justify-center">
       <div className="flex flex-col items-center p-10">
         <h1 className="text-4xl font-bold mb-[3em] text-white">Timer</h1>
-
         <TimerDisplay time={time} />
 
         <TimeInfo

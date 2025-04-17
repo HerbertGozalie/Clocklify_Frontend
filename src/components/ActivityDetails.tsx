@@ -17,6 +17,7 @@ import useTimer from "../hooks/useTimer";
 import { getErrorMessage } from "../services/HandleApiError";
 import { useEffect, useState } from "react";
 import { ActivityUpdatePayload } from "../types/activity";
+import Loader from "./Loader";
 // import useActivityDetails from "../hooks/useActivityDetails";
 
 const ActivityDetails = () => {
@@ -114,6 +115,7 @@ const ActivityDetails = () => {
   const { mutate: deleteActDetails } = useMutation({
     mutationFn: deleteActivity,
     onSuccess: () => {
+      toast.success("Activity deleted successfully!");
       queryClient.invalidateQueries({ queryKey: ["activities"] });
     },
   });
@@ -128,14 +130,10 @@ const ActivityDetails = () => {
       setTimeout(() => {
         // setIsDeleting(false);
         navigate("/activity");
-      }, 100);
+      }, 2000);
     }
     return;
   };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (isError) {
     return <div>Error: {error.message}</div>;
@@ -143,40 +141,44 @@ const ActivityDetails = () => {
 
   return (
     <div className="flex justify-center">
-      <div className="flex flex-col items-center p-10">
-        <h1 className="text-4xl font-bold mb-[1em] text-white">Timer</h1>
-        <p className="text-lg text-f-light-orange mb-[3em]">
-          {formatDate(todayDate)}
-        </p>
-        <TimerDisplay time={durationDetails} />
+      {isLoading ? (
+        <Loader isLoading={isLoading} />
+      ) : (
+        <div className="flex flex-col items-center p-10">
+          <h1 className="text-4xl font-bold mb-[1em] text-white">Timer</h1>
+          <p className="text-lg text-f-light-orange mb-[3em]">
+            {formatDate(todayDate)}
+          </p>
+          <TimerDisplay time={durationDetails} />
 
-        <TimeInfo
-          startTime={startTimeDetails}
-          startDate={startDateDetails}
-          endTime={endTimeDetails}
-          endDate={endDateDetails}
-        />
+          <TimeInfo
+            startTime={startTimeDetails}
+            startDate={startDateDetails}
+            endTime={endTimeDetails}
+            endDate={endDateDetails}
+          />
 
-        <LocationInfo
-          location={`${locationLatDetails}, ${locationLngDetails}`}
-        />
+          <LocationInfo
+            location={`${locationLatDetails}, ${locationLngDetails}`}
+          />
 
-        <DescriptionInput
-          description={descriptionDetails}
-          setDescription={setDescriptionDetails}
-          createActivityMutation={updateActivityMutation}
-        >
-          <ErrorText error={hasErrorDetails}>{errorDetails}</ErrorText>
+          <DescriptionInput
+            description={descriptionDetails}
+            setDescription={setDescriptionDetails}
+            createActivityMutation={updateActivityMutation}
+          >
+            <ErrorText error={hasErrorDetails}>{errorDetails}</ErrorText>
+          </DescriptionInput>
+
+          <TimeControls
+            mode="edit"
+            handleDelete={() => handleDeleteDetails({ uuid: uuid! })}
+            handleSave={handleSaveWithMutation}
+            createActivityMutation={updateActivityMutation}
+          />
           <ToastContainer />
-        </DescriptionInput>
-
-        <TimeControls
-          mode="edit"
-          handleDelete={() => handleDeleteDetails({ uuid: uuid! })}
-          handleSave={handleSaveWithMutation}
-          createActivityMutation={updateActivityMutation}
-        />
-      </div>
+        </div>
+      )}
     </div>
   );
 };
