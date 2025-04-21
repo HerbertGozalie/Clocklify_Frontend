@@ -12,6 +12,7 @@ import useAuth from "../hooks/useAuth";
 import { SigninSchema } from "../schema/UserSchema";
 import { loginUser } from "../services/AuthService";
 import { getErrorMessage } from "../services/HandleApiError";
+import { ToastContainer, toast } from "react-toastify";
 
 interface SignInProps {
   email: string;
@@ -42,9 +43,12 @@ const SignInPage = () => {
           },
           data.token
         );
+        toast.success("Login successful!");
         setStatus({ success: "Login successful!" });
         // console.log("Redirecting now..."); => for debugging purposes
-        navigate("/timer");
+        setTimeout(() => {
+          navigate("/timer");
+        }, 1000);
       } catch (err) {
         setStatus({ error: getErrorMessage(err) });
         setHasBackendError(true);
@@ -116,8 +120,12 @@ const SignInPage = () => {
           </div>
 
           <div className="flex justify-center mt-60">
-            <Button type="submit" className="w-xs">
-              SignIn
+            <Button
+              type="submit"
+              className="w-xs"
+              disabled={formik.isSubmitting}
+            >
+              {formik.isSubmitting ? "Signing in..." : "Login"}
             </Button>
           </div>
         </form>
@@ -127,6 +135,7 @@ const SignInPage = () => {
             Create new account?
           </Link>
         </div>
+        <ToastContainer />
       </div>
     </>
   );

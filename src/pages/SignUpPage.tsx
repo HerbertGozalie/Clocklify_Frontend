@@ -129,8 +129,12 @@ const SignUpPage = () => {
           </div>
 
           <div className="flex justify-center mt-60">
-            <Button type="submit" className="w-xs">
-              SignUp
+            <Button
+              type="submit"
+              className="w-xs"
+              disabled={formik.isSubmitting}
+            >
+              {formik.isSubmitting ? "Signing up..." : "Register"}
             </Button>
           </div>
         </form>
