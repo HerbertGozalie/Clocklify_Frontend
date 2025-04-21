@@ -59,6 +59,13 @@ const SearchBar = ({
   //   enabled: debounceSearchTerm.trim().length > 0,
   // });
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      (event.target as HTMLInputElement).blur();
+      console.log("Search for:", search);
+    }
+  };
+
   return (
     <>
       <div className="relative w-full">
@@ -67,10 +74,16 @@ const SearchBar = ({
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Search activity"
             className="w-full p-10  border-none bg-transparent focus:outline-none text-black text-sm"
           />
-          <IoMdSearch className="fill-black cursor-pointer size-22" />
+          <IoMdSearch
+            className="fill-black cursor-pointer size-22"
+            onClick={() => {
+              console.log("Search committed:", search);
+            }}
+          />
         </div>
         {/* Search results overlaying other components */}
         {/* {data && data.data.activities.length > 0 && (

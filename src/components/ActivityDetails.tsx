@@ -26,6 +26,7 @@ const ActivityDetails = () => {
   const queryClient = useQueryClient();
 
   const { formatDate, formatDateTime } = useTimer();
+
   const [descriptionDetails, setDescriptionDetails] = useState<string>("");
   const [startTimeDetails, setStartTimeDetails] = useState<string>("");
   const [startDateDetails, setStartDateDetails] = useState<string>("");
@@ -74,6 +75,19 @@ const ActivityDetails = () => {
     },
   });
 
+  const handleDurationChange = (newDuration: number) => {
+    // only accept durations ≥ 10 seconds
+    if (newDuration < 1) return;
+
+    setDurationDetails(newDuration);
+
+    const start = new Date(`${startDateDetails} ${startTimeDetails}`);
+    const newEnd = new Date(start.getTime() + newDuration * 1000);
+
+    setEndTimeDetails(formatDateTime(newEnd));
+    setEndDateDetails(formatDate(newEnd));
+  };
+
   const handleSave = (onSave?: (data: ActivityUpdatePayload) => void) => {
     if (!descriptionDetails.trim()) {
       setErrorDetails("Please enter an activity description");
@@ -86,11 +100,23 @@ const ActivityDetails = () => {
       setHasErrorDetails(true);
       return;
     }
-    setErrorDetails("");
-    setHasErrorDetails(false);
 
     const startDateTime = new Date(`${startDateDetails} ${startTimeDetails}`);
     const endDateTime = new Date(`${endDateDetails} ${endTimeDetails}`);
+
+    if (endDateTime < startDateTime) {
+      setErrorDetails("End time must be after start time.");
+      setHasErrorDetails(true);
+      return;
+    }
+
+    const updatedDuration = Math.floor(
+      (endDateTime.getTime() - startDateTime.getTime()) / 1000
+    );
+    setDurationDetails(updatedDuration);
+
+    setErrorDetails("");
+    setHasErrorDetails(false);
 
     const activityData = {
       uuid: uuid!,
@@ -149,13 +175,24 @@ const ActivityDetails = () => {
           <p className="text-lg text-f-light-orange mb-[3em]">
             {formatDate(todayDate)}
           </p>
-          <TimerDisplay time={durationDetails} />
+          <TimerDisplay
+            mode="edit"
+            time={durationDetails}
+            onDurationChange={handleDurationChange}
+            disabled={updateActivityMutation.isPending}
+          />
 
           <TimeInfo
+            mode="edit"
             startTime={startTimeDetails}
             startDate={startDateDetails}
             endTime={endTimeDetails}
             endDate={endDateDetails}
+            onTimeChangeStart={setStartTimeDetails}
+            onTimeChangeEnd={setEndTimeDetails}
+            onDateChangeStart={setStartDateDetails}
+            onDateChangeEnd={setEndDateDetails}
+            disabled={updateActivityMutation.isPending}
           />
 
           <LocationInfo
@@ -165,7 +202,7 @@ const ActivityDetails = () => {
           <DescriptionInput
             description={descriptionDetails}
             setDescription={setDescriptionDetails}
-            createActivityMutation={updateActivityMutation}
+            disabled={updateActivityMutation.isPending}
           >
             <ErrorText error={hasErrorDetails}>{errorDetails}</ErrorText>
           </DescriptionInput>

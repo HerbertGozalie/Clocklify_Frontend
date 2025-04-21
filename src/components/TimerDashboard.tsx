@@ -67,9 +67,10 @@ const TimerDashboard = () => {
     <div className="flex justify-center">
       <div className="flex flex-col items-center p-10">
         <h1 className="text-4xl font-bold mb-[3em] text-white">Timer</h1>
-        <TimerDisplay time={time} />
+        <TimerDisplay mode="display" time={time} />
 
         <TimeInfo
+          mode="display"
           startTime={startTime}
           startDate={startDate}
           endTime={endTime}
@@ -81,7 +82,7 @@ const TimerDashboard = () => {
         <DescriptionInput
           description={description}
           setDescription={setDescription}
-          createActivityMutation={createActivityMutation}
+          disabled={createActivityMutation.isPending}
         >
           <ErrorText error={hasError}>{error}</ErrorText>
           <ToastContainer />
