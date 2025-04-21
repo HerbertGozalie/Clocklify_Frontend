@@ -45,7 +45,7 @@ const ActivityDashboard = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-center">
           <div className="flex flex-col">
-            <div className="flex flex-col items-center w-[415px] md:w-md xl:w-3xl">
+            <div className="flex flex-col items-center w-[405px] md:w-md xl:w-3xl">
               <h1 className="text-4xl font-bold mb-[1.5em] text-white">
                 Activity
               </h1>
