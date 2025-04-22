@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ToastContainer, toast } from "react-toastify";
 import {
   deleteActivity,
-  // createActivity,
   getSingleActivity,
   updateActivity,
 } from "../services/ActivitiesService";
@@ -18,7 +17,6 @@ import { getErrorMessage } from "../services/HandleApiError";
 import { useEffect, useState } from "react";
 import { ActivityUpdatePayload } from "../types/activity";
 import Loader from "./Loader";
-// import useActivityDetails from "../hooks/useActivityDetails";
 
 const ActivityDetails = () => {
   const { uuid } = useParams();
@@ -26,7 +24,6 @@ const ActivityDetails = () => {
   const queryClient = useQueryClient();
 
   const { formatDate, formatDateTime } = useTimer();
-
   const [descriptionDetails, setDescriptionDetails] = useState<string>("");
   const [startTimeDetails, setStartTimeDetails] = useState<string>("");
   const [startDateDetails, setStartDateDetails] = useState<string>("");
@@ -37,7 +34,6 @@ const ActivityDetails = () => {
   const [durationDetails, setDurationDetails] = useState<number>(0);
   const [errorDetails, setErrorDetails] = useState<string>("");
   const [hasErrorDetails, setHasErrorDetails] = useState(false);
-  // const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const todayDate = new Date();
 
   const { isLoading, data, isError, error } = useQuery({
@@ -58,7 +54,6 @@ const ActivityDetails = () => {
     }
   }, [data, formatDate, formatDateTime]);
 
-  // Activity creation mutation
   const updateActivityMutation = useMutation({
     mutationFn: (newActivity: ActivityUpdatePayload) =>
       updateActivity(newActivity),
@@ -76,7 +71,6 @@ const ActivityDetails = () => {
   });
 
   const handleDurationChange = (newDuration: number) => {
-    // only accept durations ≥ 10 seconds
     if (newDuration < 1) return;
 
     setDurationDetails(newDuration);

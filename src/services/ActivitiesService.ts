@@ -40,19 +40,6 @@ export async function getAllActivities(
   return response.data;
 }
 
-// export async function getAllActivities({
-//   queryKey,
-// }: QueryFunctionContext<
-//   [string, string | null | undefined]
-// >): Promise<GetActivitiesResponse> {
-//   const [, filterOptions] = queryKey;
-
-//   const response = await apiClient.get<GetActivitiesResponse>(
-//     `/api/v1/activity?${filterOptions}`
-//   );
-//   return response.data;
-// }
-
 export async function getSingleActivity({
   queryKey,
 }: QueryFunctionContext<

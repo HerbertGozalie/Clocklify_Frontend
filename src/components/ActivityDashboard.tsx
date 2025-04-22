@@ -56,9 +56,6 @@ const ActivityDashboard = () => {
             </div>
 
             {isLoading ? (
-              // <div className="text-center text-white opacity-60 mt-[2.7em]">
-              //   Loading ...
-              // </div>
               <Loader isLoading={isLoading} />
             ) : (
               <div className="grid gap-6 mt-[2.7em]">

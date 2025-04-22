@@ -26,13 +26,14 @@ const VerifyUserEmail = () => {
           setisVerified(true);
         }
 
-        console.log(response);
+        // console.log(response);
 
         setTimeout(() => {
           navigate("/login");
         }, 2000);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
+        console.error(error);
       }
     };
     handleVerify();
