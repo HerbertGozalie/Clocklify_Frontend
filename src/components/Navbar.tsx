@@ -10,7 +10,7 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <div className="flex max-md:space-x-20 space-x-90 px-20">
+        <div className="flex max-md:space-x-20 sm:px-20 space-x-90 pl-20">
           <Link to="/timer" className="hover:opacity-90">
             TIMER
           </Link>
